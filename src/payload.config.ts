@@ -15,11 +15,17 @@ import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 
+// i18n
+import { en } from '@payloadcms/translations/languages/en'
+import { zh } from '@payloadcms/translations/languages/zh'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 export default buildConfig({
   admin: {
+    meta: {
+      title: 'East Bear Travel',
+    },
     components: {
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
       // Feel free to delete this at any time. Simply remove the line below.
@@ -83,5 +89,9 @@ export default buildConfig({
       },
     },
     tasks: [],
+  },
+  i18n: {
+    fallbackLanguage: 'en',
+    supportedLanguages: { en, zh },
   },
 })

@@ -56,6 +56,13 @@ const config = {
         sm: 'calc(var(--radius) - 4px)',
       },
       colors: {
+        // Brand colors for direct access
+        brand: {
+          green: '#476B47',
+          'green-dark': '#193818',
+          gold: '#C9A227',
+          champagne: '#F7E7CE',
+        },
         accent: {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
