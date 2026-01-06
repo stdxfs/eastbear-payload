@@ -30,6 +30,46 @@ import { useRouter } from 'next/navigation'
 type TripType = 'oneWay' | 'roundTrip'
 type CabinClass = 'business' | 'first'
 
+// Input with Clear Button Component - defined outside to prevent focus loss on re-render
+const ClearableInput = ({
+  value,
+  onChange,
+  placeholder,
+  label,
+  id,
+}: {
+  value: string
+  onChange: (value: string) => void
+  placeholder: string
+  label: string
+  id: string
+}) => (
+  <div className="relative flex-1">
+    <label htmlFor={id} className="block text-xs text-white/60 mb-1 md:hidden">
+      {label}
+    </label>
+    <div className="relative">
+      <input
+        id={id}
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full h-12 md:h-14 px-4 pr-8 bg-transparent text-white placeholder:text-white/50 focus:outline-none text-sm md:text-base"
+      />
+      {value && (
+        <button
+          type="button"
+          onClick={() => onChange('')}
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-white/50 hover:text-white transition-colors"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      )}
+    </div>
+  </div>
+)
+
 export const ItinerarySearchBar: React.FC = () => {
   const router = useRouter()
   // State
@@ -38,6 +78,8 @@ export const ItinerarySearchBar: React.FC = () => {
   const [destination, setDestination] = useState('')
   const [departureDate, setDepartureDate] = useState<Date | undefined>(undefined)
   const [returnDate, setReturnDate] = useState<Date | undefined>(undefined)
+  const [draftRange, setDraftRange] = useState<DateRange | undefined>(undefined)
+  const rangeSnapshotRef = React.useRef<DateRange | undefined>(undefined)
   const [passengers, setPassengers] = useState(1)
   const [cabinClass, setCabinClass] = useState<CabinClass>('business')
   const [datePickerOpenDesktop, setDatePickerOpenDesktop] = useState(false)
@@ -55,12 +97,35 @@ export const ItinerarySearchBar: React.FC = () => {
   const handleDateSelect = (selected: DateRange | Date | undefined, closePicker: () => void) => {
     if (tripType === 'roundTrip') {
       const range = selected as DateRange | undefined
-      setDepartureDate(range?.from)
-      setReturnDate(range?.to)
-      // Close popover when both dates are selected
-      if (range?.from && range?.to) {
-        closePicker()
+      if (!range?.from) {
+        setDraftRange(undefined)
+        return
       }
+      const isDrafting = Boolean(draftRange?.from && !draftRange?.to)
+
+      if (!isDrafting) {
+        const snapshot = rangeSnapshotRef.current
+        let nextStart = range.from
+
+        if (snapshot?.from && range.from.getTime() !== snapshot.from.getTime()) {
+          nextStart = range.from
+        } else if (snapshot?.to && range.to && range.to.getTime() !== snapshot.to.getTime()) {
+          nextStart = range.to
+        }
+
+        setDraftRange({ from: nextStart, to: undefined })
+        return
+      }
+
+      if (!range.to || range.from.getTime() === range.to.getTime()) {
+        setDraftRange({ from: range.from, to: undefined })
+        return
+      }
+
+      setDraftRange({ from: range.from, to: range.to })
+      setDepartureDate(range.from)
+      setReturnDate(range.to)
+      closePicker()
     } else {
       setDepartureDate(selected as Date | undefined)
       setReturnDate(undefined)
@@ -82,19 +147,6 @@ export const ItinerarySearchBar: React.FC = () => {
     router.push(
       `/result?departure=${departure}&destination=${destination}&departureDate=${departureDate}&returnDate=${returnDate}&passengers=${passengers}&cabinClass=${cabinClass}`,
     )
-  }
-
-  const formatDateDisplay = () => {
-    if (tripType === 'roundTrip') {
-      if (departureDate && returnDate) {
-        return `${format(departureDate, 'MMM d')} - ${format(returnDate, 'MMM d')}`
-      }
-      if (departureDate) {
-        return `${format(departureDate, 'MMM d')} - Select return`
-      }
-      return 'Select dates'
-    }
-    return departureDate ? format(departureDate, 'MMM d, yyyy') : 'Select date'
   }
 
   const formatPassengerDisplay = () => {
@@ -121,7 +173,7 @@ export const ItinerarySearchBar: React.FC = () => {
         type="button"
         onClick={() => {
           setTripType('oneWay')
-          setReturnDate(undefined)
+          setDraftRange(undefined)
         }}
         className={cn(
           'px-3 py-1 text-sm font-medium rounded-md transition-colors',
@@ -135,96 +187,186 @@ export const ItinerarySearchBar: React.FC = () => {
     </div>
   )
 
-  // Input with Clear Button Component
-  const ClearableInput = ({
-    value,
-    onChange,
-    placeholder,
-    label,
-    id,
-  }: {
-    value: string
-    onChange: (value: string) => void
-    placeholder: string
-    label: string
-    id: string
-  }) => (
-    <div className="relative flex-1">
-      <label htmlFor={id} className="block text-xs text-white/60 mb-1 md:hidden">
-        {label}
-      </label>
-      <div className="relative">
-        <input
-          id={id}
-          type="text"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          className="w-full h-12 md:h-14 px-4 pr-8 bg-transparent text-white placeholder:text-white/50 focus:outline-none text-sm md:text-base"
-        />
-        {value && (
-          <button
-            type="button"
-            onClick={() => onChange('')}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-white/50 hover:text-white transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        )}
-      </div>
-    </div>
-  )
-
-  // Date Picker Component
-  const DatePickerButton = ({
-    disabled = false,
+  // Date Range Picker Component with separate Depart and Return inputs
+  const DateRangePicker = ({
     open,
     onOpenChange,
     closePicker,
+    variant = 'desktop',
   }: {
-    disabled?: boolean
     open: boolean
     onOpenChange: (open: boolean) => void
     closePicker: () => void
-  }) => (
-    <Popover open={open} onOpenChange={onOpenChange}>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          disabled={disabled}
-          className={cn(
-            'flex items-center gap-2 h-12 md:h-14 px-4 text-left text-sm md:text-base transition-colors',
-            disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/5',
+    variant?: 'desktop' | 'mobile'
+  }) => {
+    const handleOpenChange = (isOpen: boolean) => {
+      if (isOpen && tripType === 'roundTrip') {
+        rangeSnapshotRef.current =
+          departureDate || returnDate ? { from: departureDate, to: returnDate } : undefined
+        setDraftRange(
+          departureDate || returnDate ? { from: departureDate, to: returnDate } : undefined,
+        )
+      }
+
+      if (!isOpen) {
+        if (draftRange?.from && !draftRange?.to) {
+          setDepartureDate(draftRange.from)
+          if (returnDate && draftRange.from.getTime() > returnDate.getTime()) {
+            setReturnDate(undefined)
+          }
+        }
+
+        rangeSnapshotRef.current = undefined
+        setDraftRange(undefined)
+      }
+
+      onOpenChange(isOpen)
+    }
+
+    const selectedRange =
+      draftRange ??
+      (departureDate || returnDate ? { from: departureDate, to: returnDate } : undefined)
+
+    if (variant === 'mobile') {
+      return (
+        <Popover open={open} onOpenChange={handleOpenChange}>
+          <div className="flex items-center border-b border-white/20">
+            {/* Depart Input */}
+            <div className="flex-1 border-r border-white/20">
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  className="w-full text-left hover:bg-white/5 transition-colors"
+                >
+                  <div className="px-4 pt-2">
+                    <span className="text-xs text-white/60">Depart</span>
+                  </div>
+                  <div className="h-12 px-4 flex items-center gap-2">
+                    <CalendarIcon className="w-4 h-4 text-white/60" />
+                    <span className="text-white text-sm">
+                      {departureDate ? format(departureDate, 'MMM d, yyyy') : 'Select date'}
+                    </span>
+                  </div>
+                </button>
+              </PopoverTrigger>
+            </div>
+
+            {/* Return Input */}
+            <div
+              className={cn('flex-1', tripType === 'oneWay' && 'opacity-50 pointer-events-none')}
+            >
+              <button
+                type="button"
+                className="w-full text-left hover:bg-white/5 transition-colors disabled:cursor-not-allowed"
+                onClick={() => handleOpenChange(true)}
+                disabled={tripType === 'oneWay'}
+              >
+                <div className="px-4 pt-2">
+                  <span className="text-xs text-white/60">Return</span>
+                </div>
+                <div className="h-12 px-4 flex items-center">
+                  <span className="text-white text-sm">
+                    {tripType === 'roundTrip' && returnDate
+                      ? format(returnDate, 'MMM d, yyyy')
+                      : tripType === 'oneWay'
+                        ? '-'
+                        : 'Select date'}
+                  </span>
+                </div>
+              </button>
+            </div>
+          </div>
+          <PopoverContent className="w-auto p-0" side="bottom" align="start" sideOffset={8}>
+            {tripType === 'roundTrip' ? (
+              <Calendar
+                mode="range"
+                defaultMonth={departureDate || new Date()}
+                selected={selectedRange}
+                onSelect={(range) => handleDateSelect(range, closePicker)}
+                numberOfMonths={2}
+                disabled={{ before: new Date() }}
+                className="rounded-lg"
+              />
+            ) : (
+              <Calendar
+                mode="single"
+                selected={departureDate}
+                onSelect={(date) => handleDateSelect(date, closePicker)}
+                numberOfMonths={2}
+                disabled={{ before: new Date() }}
+                className="rounded-lg"
+              />
+            )}
+          </PopoverContent>
+        </Popover>
+      )
+    }
+
+    // Desktop variant
+    return (
+      <Popover open={open} onOpenChange={handleOpenChange}>
+        <div className="flex items-center h-full w-full">
+          {/* Depart Input */}
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              className="flex-1 flex flex-col justify-center h-12 md:h-14 px-4 text-left hover:bg-white/5 transition-colors border-r border-white/20"
+            >
+              <span className="text-xs text-white/60">Depart</span>
+              <div className="flex items-center gap-2">
+                <CalendarIcon className="w-4 h-4 text-white/60" />
+                <span className="text-white text-sm whitespace-nowrap">
+                  {departureDate ? format(departureDate, 'MMM d') : 'Select'}
+                </span>
+              </div>
+            </button>
+          </PopoverTrigger>
+
+          {/* Return Input */}
+          <button
+            type="button"
+            className={cn(
+              'flex-1 flex flex-col justify-center h-12 md:h-14 px-4 text-left transition-colors',
+              tripType === 'oneWay' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/5',
+            )}
+            onClick={() => handleOpenChange(true)}
+            disabled={tripType === 'oneWay'}
+          >
+            <span className="text-xs text-white/60">Return</span>
+            <span className="text-white text-sm whitespace-nowrap">
+              {tripType === 'roundTrip' && returnDate
+                ? format(returnDate, 'MMM d')
+                : tripType === 'oneWay'
+                  ? '-'
+                  : 'Select'}
+            </span>
+          </button>
+        </div>
+        <PopoverContent className="w-auto p-0" side="bottom" align="start" sideOffset={8}>
+          {tripType === 'roundTrip' ? (
+            <Calendar
+              mode="range"
+              defaultMonth={departureDate || new Date()}
+              selected={selectedRange}
+              onSelect={(range) => handleDateSelect(range, closePicker)}
+              numberOfMonths={2}
+              disabled={{ before: new Date() }}
+              className="rounded-lg"
+            />
+          ) : (
+            <Calendar
+              mode="single"
+              selected={departureDate}
+              onSelect={(date) => handleDateSelect(date, closePicker)}
+              numberOfMonths={2}
+              disabled={{ before: new Date() }}
+              className="rounded-lg"
+            />
           )}
-        >
-          <CalendarIcon className="w-4 h-4 text-white/60" />
-          <span className="text-white whitespace-nowrap">{formatDateDisplay()}</span>
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start" sideOffset={8}>
-        {tripType === 'roundTrip' ? (
-          <Calendar
-            mode="range"
-            defaultMonth={departureDate}
-            selected={{ from: departureDate, to: returnDate }}
-            onSelect={(range) => handleDateSelect(range, closePicker)}
-            numberOfMonths={2}
-            disabled={{ before: new Date() }}
-            className="rounded-lg"
-          />
-        ) : (
-          <Calendar
-            mode="single"
-            selected={departureDate}
-            onSelect={(date) => handleDateSelect(date, closePicker)}
-            numberOfMonths={2}
-            disabled={{ before: new Date() }}
-            className="rounded-lg"
-          />
-        )}
-      </PopoverContent>
-    </Popover>
-  )
+        </PopoverContent>
+      </Popover>
+    )
+  }
 
   // Passenger & Cabin Popover Component
   const PassengerCabinButton = ({
@@ -356,7 +498,7 @@ export const ItinerarySearchBar: React.FC = () => {
         <TripTypeToggle />
         <div className="flex w-full items-stretch bg-white/10 backdrop-blur-md rounded-full overflow-hidden shadow-lg">
           {/* From */}
-          <div className="flex items-center border-r border-white/20 flex-[1_1_0%] min-w-0">
+          <div className="flex items-center border-r border-white/20 flex-1 min-w-0">
             <ClearableInput
               id="departure-desktop"
               value={departure}
@@ -377,7 +519,7 @@ export const ItinerarySearchBar: React.FC = () => {
           </button>
 
           {/* To */}
-          <div className="flex items-center border-r border-white/20 flex-[1_1_0%] min-w-0">
+          <div className="flex items-center border-r border-white/20 flex-1 min-w-0">
             <ClearableInput
               id="destination-desktop"
               value={destination}
@@ -387,17 +529,18 @@ export const ItinerarySearchBar: React.FC = () => {
             />
           </div>
 
-          {/* Date Picker */}
-          <div className="flex items-center border-r border-white/20 flex-[1.5_1_0%] min-w-0">
-            <DatePickerButton
+          {/* Date Picker - Depart + Return (2 units) */}
+          <div className="flex items-center border-r border-white/20 flex-[2] min-w-0">
+            <DateRangePicker
               open={datePickerOpenDesktop}
               onOpenChange={setDatePickerOpenDesktop}
               closePicker={() => setDatePickerOpenDesktop(false)}
+              variant="desktop"
             />
           </div>
 
           {/* Passengers & Cabin */}
-          <div className="flex items-center border-r border-white/20 flex-[1_1_0%] min-w-0">
+          <div className="flex items-center border-r border-white/20 flex-1 min-w-0">
             <PassengerCabinButton
               open={passengerPopoverOpenDesktop}
               onOpenChange={setPassengerPopoverOpenDesktop}
@@ -446,34 +589,12 @@ export const ItinerarySearchBar: React.FC = () => {
           </div>
 
           {/* Row 2: Dates */}
-          <div className="flex items-center border-b border-white/20">
-            <div className="flex-1 border-r border-white/20">
-              <div className="px-4 pt-2">
-                <span className="text-xs text-white/60">Depart</span>
-              </div>
-              <DatePickerButton
-                open={datePickerOpenMobile}
-                onOpenChange={setDatePickerOpenMobile}
-                closePicker={() => setDatePickerOpenMobile(false)}
-              />
-            </div>
-            <div
-              className={cn('flex-1', tripType === 'oneWay' && 'opacity-50 pointer-events-none')}
-            >
-              <div className="px-4 pt-2">
-                <span className="text-xs text-white/60">Return</span>
-              </div>
-              <div className="h-12 px-4 flex items-center">
-                <span className="text-white text-sm">
-                  {tripType === 'roundTrip' && returnDate
-                    ? format(returnDate, 'MMM d, yyyy')
-                    : tripType === 'oneWay'
-                      ? '-'
-                      : 'Select date'}
-                </span>
-              </div>
-            </div>
-          </div>
+          <DateRangePicker
+            open={datePickerOpenMobile}
+            onOpenChange={setDatePickerOpenMobile}
+            closePicker={() => setDatePickerOpenMobile(false)}
+            variant="mobile"
+          />
 
           {/* Row 3: Passengers & Cabin */}
           <div className="border-b border-white/20">

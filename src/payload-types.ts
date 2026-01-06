@@ -158,7 +158,7 @@ export interface Page {
   id: string;
   title: string;
   hero: {
-    type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    type: 'none' | 'homePage' | 'highImpact' | 'mediumImpact' | 'lowImpact';
     richText?: {
       root: {
         type: string;
@@ -199,6 +199,13 @@ export interface Page {
         }[]
       | null;
     media?: (string | null) | Media;
+    airlineLogos?:
+      | {
+          logo: string | Media;
+          name?: string | null;
+          id?: string | null;
+        }[]
+      | null;
   };
   layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
   meta?: {
@@ -1078,6 +1085,13 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T;
             };
         media?: T;
+        airlineLogos?:
+          | T
+          | {
+              logo?: T;
+              name?: T;
+              id?: T;
+            };
       };
   layout?:
     | T
@@ -1635,6 +1649,34 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Header {
   id: string;
+  topBar?: {
+    /**
+     * Phone number for WhatsApp link (include country code, no spaces)
+     */
+    phoneNumber?: string | null;
+    /**
+     * How the phone number appears on the website
+     */
+    phoneDisplay?: string | null;
+    languages?:
+      | {
+          /**
+           * Language code (e.g., en, zh, es)
+           */
+          code: string;
+          /**
+           * Display name for the language
+           */
+          label: string;
+          /**
+           * Country code for flag (e.g., US, CN, ES)
+           */
+          flag?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    defaultLanguage?: string | null;
+  };
   navItems?:
     | {
         link: {
@@ -1692,6 +1734,21 @@ export interface Footer {
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
+  topBar?:
+    | T
+    | {
+        phoneNumber?: T;
+        phoneDisplay?: T;
+        languages?:
+          | T
+          | {
+              code?: T;
+              label?: T;
+              flag?: T;
+              id?: T;
+            };
+        defaultLanguage?: T;
+      };
   navItems?:
     | T
     | {
