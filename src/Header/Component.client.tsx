@@ -30,7 +30,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
 
   return (
     <header
-      className="sticky top-0 z-20 w-full bg-background/95 backdrop-blur-sm"
+      className="sticky top-0 z-20 w-full bg-background/10 backdrop-blur-sm"
       {...(theme ? { 'data-theme': theme } : {})}
     >
       {/* First Row: Top Bar with Logo + Utility Items */}

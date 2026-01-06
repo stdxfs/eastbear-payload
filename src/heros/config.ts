@@ -24,6 +24,10 @@ export const hero: Field = {
           value: 'none',
         },
         {
+          label: 'Home Page',
+          value: 'homePage',
+        },
+        {
           label: 'High Impact',
           value: 'highImpact',
         },
@@ -62,10 +66,31 @@ export const hero: Field = {
       name: 'media',
       type: 'upload',
       admin: {
-        condition: (_, { type } = {}) => ['highImpact', 'mediumImpact'].includes(type),
+        condition: (_, { type } = {}) => ['highImpact', 'mediumImpact', 'homePage'].includes(type),
       },
       relationTo: 'media',
       required: true,
+    },
+    {
+      name: 'airlineLogos',
+      type: 'array',
+      label: 'Airline Logos',
+      admin: {
+        condition: (_, { type } = {}) => type === 'homePage',
+      },
+      fields: [
+        {
+          name: 'logo',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+        },
+        {
+          name: 'name',
+          type: 'text',
+          label: 'Airline Name',
+        },
+      ],
     },
   ],
   label: false,

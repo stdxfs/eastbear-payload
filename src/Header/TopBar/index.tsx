@@ -23,29 +23,28 @@ export const TopBar: React.FC<TopBarProps> = ({ data }) => {
 
   return (
     <div className="bg-white border-b border-border/50">
-      <div className="container py-3 flex items-center justify-between">
-        {/* Logo - Left Side */}
-        <Link href="/" className="flex-shrink-0">
-          <Logo loading="eager" priority="high" />
-        </Link>
+      <div className="container max-w-none ">
+        <div className="py-3 flex items-center justify-between">
+          {/* Logo - Left */}
+          <Link href="/" className="flex-shrink-0">
+            <Logo loading="eager" priority="high" />
+          </Link>
 
-        {/* Utility Items - Right Side */}
-        <div className="flex items-center gap-4">
-          {/* Language Selector */}
-          {languages.length > 0 && (
-            <LanguageSelector
-              languages={languages}
-              defaultLanguage={topBar?.defaultLanguage || 'en'}
-            />
-          )}
-
-          {/* WhatsApp Link */}
-          {topBar?.phoneNumber && (
-            <WhatsAppLink
-              phoneNumber={topBar.phoneNumber}
-              displayText={topBar.phoneDisplay || topBar.phoneNumber}
-            />
-          )}
+          {/* Language & Phone - Right */}
+          <div className="flex items-center gap-4">
+            {languages.length > 0 && (
+              <LanguageSelector
+                languages={languages}
+                defaultLanguage={topBar?.defaultLanguage || 'en'}
+              />
+            )}
+            {topBar?.phoneNumber && (
+              <WhatsAppLink
+                phoneNumber={topBar.phoneNumber}
+                displayText={topBar.phoneDisplay || topBar.phoneNumber}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>
