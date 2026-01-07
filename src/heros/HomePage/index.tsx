@@ -25,7 +25,7 @@ export const HomePageHero: React.FC<Page['hero']> = ({ media, airlineLogos, rich
           <Media
             fill
             imgClassName="object-cover"
-            videoClassName="h-full w-full object-cover"
+            videoClassName="absolute inset-0 w-full h-full object-cover"
             priority
             resource={media}
           />

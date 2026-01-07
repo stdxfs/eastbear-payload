@@ -12,7 +12,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { MapPin, Calendar, User, Users, Phone, Mail, Tag, Headphones, CheckCircle } from 'lucide-react'
+import {
+  MapPin,
+  Calendar,
+  User,
+  Users,
+  Phone,
+  Mail,
+  Tag,
+  Headphones,
+  CheckCircle,
+} from 'lucide-react'
+import Link from 'next/link'
 
 type TripType = 'round-trip' | 'one-way' | 'multi-city'
 
@@ -35,7 +46,10 @@ export function GetQuoteForm({ className }: { className?: string }) {
             </div>
             <div className="flex flex-col gap-0.5">
               <p className="text-sm text-gray-600">Call to Learn More or Book</p>
-              <a href="tel:888-668-0828" className="text-2xl font-bold text-[#ff385c] hover:underline">
+              <a
+                href="tel:888-668-0828"
+                className="text-2xl font-bold text-[#ff385c] hover:underline"
+              >
                 888-668-0828
               </a>
               <p className="text-xs text-gray-500">
@@ -70,7 +84,7 @@ export function GetQuoteForm({ className }: { className?: string }) {
                 'flex-1 py-4 text-sm font-medium uppercase tracking-wide transition-colors',
                 tripType === type
                   ? 'border-b-2 border-gray-900 text-gray-900'
-                  : 'text-gray-500 hover:text-gray-700'
+                  : 'text-gray-500 hover:text-gray-700',
               )}
             >
               {type.replace('-', ' ')}
@@ -111,10 +125,7 @@ export function GetQuoteForm({ className }: { className?: string }) {
                 <Label className="text-sm font-bold text-gray-700">Depart Date</Label>
                 <div className="relative">
                   <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-gray-400" />
-                  <Input
-                    type="date"
-                    className="h-14 rounded-xl border-gray-300 pl-12 text-base"
-                  />
+                  <Input type="date" className="h-14 rounded-xl border-gray-300 pl-12 text-base" />
                 </div>
               </div>
               {tripType !== 'one-way' && (
@@ -219,13 +230,12 @@ export function GetQuoteForm({ className }: { className?: string }) {
             {/* Privacy Notice */}
             <p className="text-xs text-gray-500 leading-relaxed">
               *No Spam - only phone-exclusive deals. No purchase necessary. By providing your
-              contact details and clicking on &quot;Get Free Quotes&quot; you agree to be contacted for
-              travel information via phone and automated phone and text messages and by email.
-              Your consent to receive such messages is not a condition of purchase. We respect
-              your{' '}
-              <a href="/privacy" className="underline hover:text-gray-700">
+              contact details and clicking on &quot;Get Free Quotes&quot; you agree to be contacted
+              for travel information via phone and automated phone and text messages and by email.
+              Your consent to receive such messages is not a condition of purchase. We respect your{' '}
+              <Link href="/privacy" className="underline hover:text-gray-700">
                 privacy
-              </a>
+              </Link>
               .
             </p>
           </div>
