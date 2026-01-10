@@ -4,15 +4,25 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import React from 'react'
 import RichText from '@/components/RichText'
+import { GSAPAnimate } from '@/components/ui/gsap-animate'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
 
 export const ArchiveBlock: React.FC<
   ArchiveBlockProps & {
     id?: string
+    enableStagger?: boolean
   }
 > = async (props) => {
-  const { id, categories, introContent, limit: limitFromProps, populateBy, selectedDocs } = props
+  const {
+    id,
+    categories,
+    introContent,
+    limit: limitFromProps,
+    populateBy,
+    selectedDocs,
+    enableStagger,
+  } = props
 
   const limit = limitFromProps || 3
 
@@ -54,12 +64,17 @@ export const ArchiveBlock: React.FC<
 
   return (
     <div className="my-16" id={`block-${id}`}>
-      {introContent && (
-        <div className="container mb-16">
-          <RichText className="ms-0 max-w-[48rem]" data={introContent} enableGutter={false} />
-        </div>
-      )}
-      <CollectionArchive posts={posts} />
+      {introContent &&
+        (enableStagger ? (
+          <GSAPAnimate animation="fadeInUp" delay={0} className="container mb-16">
+            <RichText className="ms-0 max-w-[48rem]" data={introContent} enableGutter={false} />
+          </GSAPAnimate>
+        ) : (
+          <div className="container mb-16">
+            <RichText className="ms-0 max-w-[48rem]" data={introContent} enableGutter={false} />
+          </div>
+        ))}
+      <CollectionArchive posts={posts} enableStagger={enableStagger} />
     </div>
   )
 }

@@ -3,6 +3,7 @@ import type { StaticImageData } from 'next/image'
 import { cn } from '@/utilities/ui'
 import React from 'react'
 import RichText from '@/components/RichText'
+import { GSAPAnimate } from '@/components/ui/gsap-animate'
 
 import type { MediaBlock as MediaBlockProps } from '@/payload-types'
 
@@ -16,6 +17,7 @@ type Props = MediaBlockProps & {
   imgClassName?: string
   staticImage?: StaticImageData
   disableInnerContainer?: boolean
+  enableStagger?: boolean
 }
 
 export const MediaBlock: React.FC<Props> = (props) => {
@@ -27,6 +29,7 @@ export const MediaBlock: React.FC<Props> = (props) => {
     media,
     staticImage,
     disableInnerContainer,
+    enableStagger,
   } = props
 
   let caption
@@ -42,26 +45,50 @@ export const MediaBlock: React.FC<Props> = (props) => {
         className,
       )}
     >
-      {(media || staticImage) && (
-        <Media
-          imgClassName={cn('border border-border rounded-[0.8rem]', imgClassName)}
-          resource={media}
-          src={staticImage}
-        />
-      )}
-      {caption && (
-        <div
-          className={cn(
-            'mt-6',
-            {
-              container: !disableInnerContainer,
-            },
-            captionClassName,
-          )}
-        >
-          <RichText data={caption} enableGutter={false} />
-        </div>
-      )}
+      {(media || staticImage) &&
+        (enableStagger ? (
+          <GSAPAnimate animation="fadeInUp" delay={0}>
+            <Media
+              imgClassName={cn('border border-border rounded-[0.8rem]', imgClassName)}
+              resource={media}
+              src={staticImage}
+            />
+          </GSAPAnimate>
+        ) : (
+          <Media
+            imgClassName={cn('border border-border rounded-[0.8rem]', imgClassName)}
+            resource={media}
+            src={staticImage}
+          />
+        ))}
+      {caption &&
+        (enableStagger ? (
+          <GSAPAnimate
+            animation="fadeInUp"
+            delay={0.15}
+            className={cn(
+              'mt-6',
+              {
+                container: !disableInnerContainer,
+              },
+              captionClassName,
+            )}
+          >
+            <RichText data={caption} enableGutter={false} />
+          </GSAPAnimate>
+        ) : (
+          <div
+            className={cn(
+              'mt-6',
+              {
+                container: !disableInnerContainer,
+              },
+              captionClassName,
+            )}
+          >
+            <RichText data={caption} enableGutter={false} />
+          </div>
+        ))}
     </div>
   )
 }
