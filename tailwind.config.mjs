@@ -25,6 +25,21 @@ const config = {
     'bg-success/30',
     'border-warning',
     'bg-warning/30',
+    'opacity-0',
+    'animate-fade-in',
+    'animate-fade-in-up',
+    'animate-fade-in-down',
+    'animate-scale-in',
+    'animate-slide-in-left',
+    'animate-slide-in-right',
+    // Palette utilities
+    'palette-gradient',
+    'palette-gradient-text',
+    'palette-shadow-card',
+    'palette-shadow-button',
+    'palette-transition',
+    'palette-hover-scale',
+    'palette-hover-lift',
   ],
   theme: {
     container: {
@@ -49,20 +64,58 @@ const config = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'fade-in': 'fade-in 0.6s ease-out forwards',
+        'fade-in-up': 'fade-in-up 0.6s ease-out forwards',
+        'fade-in-down': 'fade-in-down 0.5s ease-out forwards',
+        'scale-in': 'scale-in 0.5s ease-out forwards',
+        'slide-in-left': 'slide-in-left 0.5s ease-out forwards',
+        'slide-in-right': 'slide-in-right 0.5s ease-out forwards',
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        // Palette-specific radii
+        'pill': '40px',
+        'card': '8px',
+        'tooltip': '8px',
       },
       colors: {
-        // Brand colors for direct access
-        brand: {
-          green: '#476B47',
-          'green-dark': '#193818',
-          gold: '#C9A227',
-          champagne: '#F7E7CE',
+        // Palette colors (reference CSS variables)
+        palette: {
+          primary: 'hsl(var(--palette-primary))',
+          'primary-hover': 'hsl(var(--palette-primary-hover))',
+          secondary: 'hsl(var(--palette-secondary))',
+          accent: 'hsl(var(--palette-accent))',
+          'accent-light': 'hsl(var(--palette-accent-light))',
+          'text-primary': 'hsl(var(--palette-text-primary))',
+          'text-secondary': 'hsl(var(--palette-text-secondary))',
+          'text-muted': 'hsl(var(--palette-text-muted))',
+          bg: 'hsl(var(--palette-bg))',
+          surface: 'hsl(var(--palette-surface))',
+          border: 'hsl(var(--palette-border))',
         },
+        // Brand colors for direct access (Custom palette)
+        brand: {
+          forest: '#004225',
+          'forest-dark': '#00301A',
+          beige: '#F5F5DC',
+          amber: '#FFB000',
+          peach: '#FFCF9D',
+        },
+        // TBC colors for direct access
+        tbc: {
+          purple: '#590C32',
+          'purple-dark': '#3D0822',
+          magenta: '#9D1D5A',
+          blue: '#4A94EC',
+          gray: {
+            100: '#F4F6F7',
+            400: '#768189',
+            700: '#333333',
+          },
+        },
+        // shadcn/ui compatible
         accent: {
           DEFAULT: 'hsl(var(--accent))',
           foreground: 'hsl(var(--accent-foreground))',
@@ -100,6 +153,18 @@ const config = {
         error: 'hsl(var(--error))',
         warning: 'hsl(var(--warning))',
       },
+      boxShadow: {
+        'palette-card': 'var(--palette-card-shadow)',
+        'palette-button': 'var(--palette-button-shadow)',
+        'card-hover': '0 8px 25px rgba(0, 0, 0, 0.15)',
+        'button-hover': '0 6px 20px rgba(0, 0, 0, 0.2)',
+      },
+      transitionDuration: {
+        'palette': '250ms',
+      },
+      transitionTimingFunction: {
+        'palette': 'ease',
+      },
       fontFamily: {
         mono: ['var(--font-geist-mono)'],
         sans: ['var(--font-geist-sans)'],
@@ -112,6 +177,30 @@ const config = {
         'accordion-up': {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
+        },
+        'fade-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        'fade-in-up': {
+          from: { opacity: '0', transform: 'translateY(20px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        'fade-in-down': {
+          from: { opacity: '0', transform: 'translateY(-20px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        'scale-in': {
+          from: { opacity: '0', transform: 'scale(0.95)' },
+          to: { opacity: '1', transform: 'scale(1)' },
+        },
+        'slide-in-left': {
+          from: { opacity: '0', transform: 'translateX(-20px)' },
+          to: { opacity: '1', transform: 'translateX(0)' },
+        },
+        'slide-in-right': {
+          from: { opacity: '0', transform: 'translateX(20px)' },
+          to: { opacity: '1', transform: 'translateX(0)' },
         },
       },
       typography: () => ({

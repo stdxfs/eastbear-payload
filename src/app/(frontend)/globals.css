@@ -13,78 +13,158 @@
     font-weight: unset;
   }
 
+  /* ============================================
+     PALETTE SYSTEM - Switchable Color Schemes
+     ============================================ */
+
+  /* Default Palette: Custom (Forest/Amber) - Light Mode */
+  :root,
+  [data-palette='custom'] {
+    /* Brand Colors */
+    --palette-primary: 152 100% 13%;        /* #004225 - Forest Green */
+    --palette-primary-hover: 152 100% 10%;  /* Darker forest green */
+    --palette-secondary: 60 56% 91%;        /* #F5F5DC - Beige */
+    --palette-accent: 42 100% 50%;          /* #FFB000 - Amber */
+    --palette-accent-light: 35 100% 81%;    /* #FFCF9D - Light Peach */
+
+    /* Gradient (optional for buttons) */
+    --palette-gradient-start: 152 100% 13%;
+    --palette-gradient-end: 42 100% 50%;
+
+    /* Semantic Neutrals */
+    --palette-text-primary: 0 0% 10%;       /* #1A1A1A */
+    --palette-text-secondary: 0 0% 36%;     /* #5C5C5C */
+    --palette-text-muted: 0 0% 55%;         /* #8C8C8C */
+    --palette-bg: 0 0% 98%;                 /* #FAFAFA */
+    --palette-surface: 0 0% 100%;           /* #FFFFFF */
+    --palette-border: 0 0% 90%;             /* #E5E5E5 */
+
+    /* Component Specific */
+    --palette-card-shadow: 0 4px 16px rgba(0, 66, 37, 0.12);
+    --palette-button-shadow: 0 4px 14px rgba(0, 66, 37, 0.25);
+  }
+
+  /* TBC Palette: Purple/Magenta - Light Mode */
+  [data-palette='tbc'] {
+    /* Brand Colors */
+    --palette-primary: 329 83% 20%;         /* #590C32 - Deep Purple */
+    --palette-primary-hover: 329 85% 15%;   /* Darker purple */
+    --palette-secondary: 200 14% 96%;       /* #F4F6F7 - Light Gray */
+    --palette-accent: 333 68% 37%;          /* #9D1D5A - Magenta */
+    --palette-accent-light: 213 80% 61%;    /* #4A94EC - Blue */
+
+    /* Gradient */
+    --palette-gradient-start: 329 83% 20%;
+    --palette-gradient-end: 333 68% 37%;
+
+    /* Semantic Neutrals */
+    --palette-text-primary: 0 0% 20%;       /* #333333 */
+    --palette-text-secondary: 210 8% 55%;   /* #768189 */
+    --palette-text-muted: 210 8% 65%;       /* #95A0A8 */
+    --palette-bg: 0 0% 98%;                 /* #FAFAFA */
+    --palette-surface: 0 0% 100%;           /* #FFFFFF */
+    --palette-border: 210 10% 90%;          /* #E4E7E9 */
+
+    /* Component Specific */
+    --palette-card-shadow: 0 4px 16px rgba(89, 12, 50, 0.15);
+    --palette-button-shadow: 0 4px 14px rgba(89, 12, 50, 0.4);
+  }
+
+  /* ============================================
+     SHADCN/UI COMPATIBLE VARIABLES
+     (Reference palette variables)
+     ============================================ */
+
   :root {
-    /* Light Theme - White + Champagne Gold + Forest Green */
-    --background: 0 0% 100%;
-    --foreground: 118 45% 16%;
+    /* Light Theme Base */
+    --background: var(--palette-bg);
+    --foreground: var(--palette-text-primary);
 
-    --card: 40 50% 98%;
-    --card-foreground: 118 45% 16%;
+    --card: var(--palette-surface);
+    --card-foreground: var(--palette-text-primary);
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 118 45% 16%;
+    --popover: var(--palette-surface);
+    --popover-foreground: var(--palette-text-primary);
 
-    --primary: 47 71% 47%;
+    --primary: var(--palette-primary);
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 41 73% 89%;
-    --secondary-foreground: 118 45% 16%;
+    --secondary: var(--palette-secondary);
+    --secondary-foreground: var(--palette-text-primary);
 
-    --muted: 40 30% 96%;
-    --muted-foreground: 120 10% 45%;
+    --muted: var(--palette-secondary);
+    --muted-foreground: var(--palette-text-muted);
 
-    --accent: 120 19% 35%;
+    --accent: var(--palette-accent);
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 41 40% 85%;
-    --input: 41 30% 92%;
-    --ring: 47 71% 47%;
+    --border: var(--palette-border);
+    --input: var(--palette-border);
+    --ring: var(--palette-accent);
 
-    --radius: 0.2rem;
+    --radius: 0.5rem;
 
-    --success: 120 30% 45%;
-    --warning: 41 73% 70%;
-    --error: 0 65% 55%;
+    --success: 142 71% 45%;
+    --warning: 38 92% 50%;
+    --error: 0 84% 60%;
   }
+
+  /* ============================================
+     DARK THEME OVERRIDES
+     ============================================ */
 
   [data-theme='dark'] {
-    /* Dark Theme - Dark Forest Green + Champagne Gold */
-    --background: 120 30% 8%;
-    --foreground: 40 50% 96%;
+    /* Dark theme base - adjusts for both palettes */
+    --background: 0 0% 7%;                  /* #121212 */
+    --foreground: 0 0% 95%;                 /* #F2F2F2 */
 
-    --card: 120 25% 12%;
-    --card-foreground: 40 50% 96%;
+    --card: 0 0% 10%;                       /* #1A1A1A */
+    --card-foreground: 0 0% 95%;
 
-    --popover: 120 30% 10%;
-    --popover-foreground: 40 50% 96%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 47 71% 52%;
-    --primary-foreground: 120 30% 8%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 120 20% 15%;
-    --secondary-foreground: 40 50% 96%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 95%;
 
-    --muted: 120 15% 18%;
-    --muted-foreground: 40 20% 65%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 120 19% 45%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 40%;
+    --destructive: 0 62.8% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 120 15% 20%;
-    --input: 120 20% 15%;
-    --ring: 47 71% 52%;
+    --border: 0 0% 20%;
+    --input: 0 0% 15%;
+  }
 
-    --success: 120 40% 35%;
-    --warning: 41 50% 45%;
-    --error: 0 50% 45%;
+  /* Custom palette dark mode adjustments */
+  [data-theme='dark'][data-palette='custom'],
+  [data-theme='dark']:not([data-palette]) {
+    --palette-primary: 152 80% 25%;         /* Lighter forest for dark mode */
+    --palette-accent: 42 100% 55%;          /* Brighter amber */
+    --palette-card-shadow: 0 4px 16px rgba(0, 66, 37, 0.3);
+    --palette-button-shadow: 0 4px 14px rgba(255, 176, 0, 0.3);
+  }
+
+  /* TBC palette dark mode adjustments */
+  [data-theme='dark'][data-palette='tbc'] {
+    --palette-primary: 333 68% 45%;         /* Lighter magenta for dark mode */
+    --palette-accent: 333 68% 55%;          /* Brighter magenta */
+    --palette-card-shadow: 0 4px 16px rgba(157, 29, 90, 0.3);
+    --palette-button-shadow: 0 4px 14px rgba(157, 29, 90, 0.5);
   }
 }
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
 
 @layer base {
   * {
@@ -95,6 +175,7 @@
   }
 }
 
+/* Theme loading animation */
 html {
   opacity: 0;
 }
@@ -102,4 +183,71 @@ html {
 html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
+}
+
+/* ============================================
+   UTILITY CLASSES FOR PALETTE SYSTEM
+   ============================================ */
+
+@layer utilities {
+  /* Gradient backgrounds */
+  .palette-gradient {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--palette-gradient-start)) 0%,
+      hsl(var(--palette-gradient-end)) 100%
+    );
+  }
+
+  .palette-gradient-hover:hover {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--palette-primary-hover)) 0%,
+      hsl(var(--palette-gradient-end)) 100%
+    );
+  }
+
+  /* Gradient text */
+  .palette-gradient-text {
+    background: linear-gradient(
+      135deg,
+      hsl(var(--palette-primary)) 0%,
+      hsl(var(--palette-accent)) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Shadows */
+  .palette-shadow-card {
+    box-shadow: var(--palette-card-shadow);
+  }
+
+  .palette-shadow-button {
+    box-shadow: var(--palette-button-shadow);
+  }
+
+  /* Transitions */
+  .palette-transition {
+    transition: all 0.25s ease;
+  }
+
+  /* Hover effects */
+  .palette-hover-scale {
+    transition: transform 0.25s ease;
+  }
+
+  .palette-hover-scale:hover {
+    transform: scale(1.02);
+  }
+
+  .palette-hover-lift {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .palette-hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
 }
