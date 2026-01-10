@@ -2,10 +2,14 @@ import { cn } from '@/utilities/ui'
 import * as React from 'react'
 
 const Card: React.FC<
-  { ref?: React.Ref<HTMLDivElement> } & React.HTMLAttributes<HTMLDivElement>
-> = ({ className, ref, ...props }) => (
+  { ref?: React.Ref<HTMLDivElement>; hover?: boolean } & React.HTMLAttributes<HTMLDivElement>
+> = ({ className, hover, ref, ...props }) => (
   <div
-    className={cn('rounded-lg border bg-card text-card-foreground shadow-sm', className)}
+    className={cn(
+      'rounded-card border bg-card text-card-foreground shadow-palette-card',
+      hover && 'palette-hover-lift cursor-pointer',
+      className,
+    )}
     ref={ref}
     {...props}
   />
