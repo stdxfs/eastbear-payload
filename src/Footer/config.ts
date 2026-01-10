@@ -126,24 +126,6 @@ export const Footer: GlobalConfig = {
         },
       ],
     },
-    // Legacy nav items (kept for backwards compatibility)
-    {
-      name: 'navItems',
-      type: 'array',
-      label: 'Navigation Items (Legacy)',
-      fields: [
-        link({
-          appearances: false,
-        }),
-      ],
-      maxRows: 6,
-      admin: {
-        initCollapsed: true,
-        components: {
-          RowLabel: '@/Footer/RowLabel#RowLabel',
-        },
-      },
-    },
   ],
   hooks: {
     afterChange: [revalidateFooter],

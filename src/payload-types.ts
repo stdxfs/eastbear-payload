@@ -207,7 +207,7 @@ export interface Page {
         }[]
       | null;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
+  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | PostArchiveCarouselBlock)[];
   meta?: {
     title?: string | null;
     /**
@@ -788,6 +788,46 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PostArchiveCarouselBlock".
+ */
+export interface PostArchiveCarouselBlock {
+  introContent?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  populateBy?: ('collection' | 'selection') | null;
+  relationTo?: 'posts' | null;
+  categories?: (string | Category)[] | null;
+  limit?: number | null;
+  selectedDocs?:
+    | {
+        relationTo: 'posts';
+        value: string | Post;
+      }[]
+    | null;
+  carouselOptions?: {
+    showDots?: boolean | null;
+    autoPlay?: boolean | null;
+    autoPlayDelay?: number | null;
+    loop?: boolean | null;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'postArchiveCarousel';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1101,6 +1141,7 @@ export interface PagesSelect<T extends boolean = true> {
         mediaBlock?: T | MediaBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
+        postArchiveCarousel?: T | PostArchiveCarouselBlockSelect<T>;
       };
   meta?:
     | T
@@ -1197,6 +1238,28 @@ export interface FormBlockSelect<T extends boolean = true> {
   form?: T;
   enableIntro?: T;
   introContent?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PostArchiveCarouselBlock_select".
+ */
+export interface PostArchiveCarouselBlockSelect<T extends boolean = true> {
+  introContent?: T;
+  populateBy?: T;
+  relationTo?: T;
+  categories?: T;
+  limit?: T;
+  selectedDocs?: T;
+  carouselOptions?:
+    | T
+    | {
+        showDots?: T;
+        autoPlay?: T;
+        autoPlayDelay?: T;
+        loop?: T;
+      };
   id?: T;
   blockName?: T;
 }
@@ -1706,26 +1769,49 @@ export interface Header {
  */
 export interface Footer {
   id: string;
-  navItems?:
-    | {
-        link: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: string | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: string | Post;
-              } | null);
-          url?: string | null;
-          label: string;
-        };
-        id?: string | null;
-      }[]
-    | null;
+  contactInfo?: {
+    phone?: string | null;
+    email?: string | null;
+    address?: string | null;
+  };
+  socialLinks?: {
+    facebookUrl?: string | null;
+    linkedinUrl?: string | null;
+  };
+  contactSection?: {
+    title?: string | null;
+    description?: string | null;
+  };
+  bottomRow?: {
+    copyrightText?: string | null;
+    legalLinks?:
+      | {
+          link: {
+            type?: ('reference' | 'custom') | null;
+            newTab?: boolean | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: string | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: string | Post;
+                } | null);
+            url?: string | null;
+            label: string;
+          };
+          id?: string | null;
+        }[]
+      | null;
+    paymentLogos?:
+      | {
+          logo: string | Media;
+          alt?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1772,19 +1858,50 @@ export interface HeaderSelect<T extends boolean = true> {
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
-  navItems?:
+  contactInfo?:
     | T
     | {
-        link?:
+        phone?: T;
+        email?: T;
+        address?: T;
+      };
+  socialLinks?:
+    | T
+    | {
+        facebookUrl?: T;
+        linkedinUrl?: T;
+      };
+  contactSection?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
+  bottomRow?:
+    | T
+    | {
+        copyrightText?: T;
+        legalLinks?:
           | T
           | {
-              type?: T;
-              newTab?: T;
-              reference?: T;
-              url?: T;
-              label?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              id?: T;
             };
-        id?: T;
+        paymentLogos?:
+          | T
+          | {
+              logo?: T;
+              alt?: T;
+              id?: T;
+            };
       };
   updatedAt?: T;
   createdAt?: T;
